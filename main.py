@@ -1,25 +1,3 @@
-# from fastapi import FastAPI
-# from mcp.server.fastmcp import FastMCP
-# import uvicorn
-#
-# mcp = FastMCP("demo-tools")
-#
-# @mcp.tool()
-# def sum_numbers(a: float, b: float):
-#     """Calculate sum"""
-#     return a + b
-#
-# app = FastAPI()
-#
-# @app.get("/")
-# def root():
-#     return {"status": "running"}
-#
-# # Mount SAU KHI đã định nghĩa tất cả routes
-# app.mount("/mcp", mcp.sse_app())
-#
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8999)
 import os
 import math
 import random
@@ -29,13 +7,14 @@ from fastapi import FastAPI
 from mcp.server.fastmcp import FastMCP
 import uvicorn
 
-from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-
 app = FastAPI()
 
-app.add_middleware(ProxyHeadersMiddleware)
+# ✅ Fix lỗi "Invalid Host header" khi deploy Render
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 mcp = FastMCP("demo-tools")
+
 # ─────────────────────────────────────────
 # 🔢 MATH
 # ─────────────────────────────────────────
@@ -229,7 +208,7 @@ def unit_converter(value: float, from_unit: str, to_unit: str) -> dict:
 # 🚀 APP
 # ─────────────────────────────────────────
 
-app.mount("/mcp/", mcp.sse_app())
+app.mount("/mcp", mcp.sse_app())
 
 @app.get("/")
 def root():
