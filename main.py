@@ -225,7 +225,7 @@ def unit_converter(value: float, from_unit: str, to_unit: str) -> dict:
 # 🚀 APP
 # ─────────────────────────────────────────
 
-app.mount("/mcp", mcp.sse_app())
+app.mount("/mcp/", mcp.sse_app())
 
 @app.get("/")
 def root():

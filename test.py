@@ -1,20 +1,23 @@
 import asyncio
-from mcp.client.sse import sse_client
 from mcp import ClientSession
+from mcp.client.sse import sse_client
 
 
-async def test():
-    async with sse_client("http://localhost:8999/mcp/sse") as (read, write):
-        async with ClientSession(read, write) as session:
+async def main():
+    async with sse_client("http://localhost:8999/mcp/") as streams:
+        async with ClientSession(*streams) as session:
+
             await session.initialize()
 
-            # List tools
             tools = await session.list_tools()
-            print("✅ Tools:", [t.name for t in tools.tools])
+            print("TOOLS:", len(tools))
 
-            # Gọi sum_numbers
-            result = await session.call_tool("sum_numbers", {"a": 10, "b": 20})
-            print("✅ 10 + 20 =", result.content[0].text)
+            result = await session.call_tool(
+                "roll_dice",
+                {"sides": 6}
+            )
+
+            print("RESULT:", result)
 
 
-asyncio.run(test())
+asyncio.run(main())
